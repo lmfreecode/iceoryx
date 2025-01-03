@@ -17,6 +17,7 @@
 
 #include "iceoryx_platform/time.hpp"
 #include <chrono>
+#include <iostream>
 
 static std::chrono::nanoseconds getNanoSeconds(const timespec& value)
 {
@@ -195,8 +196,19 @@ int iox_gettimeofday(struct timeval* tp, struct timezone* tzp)
     SYSTEMTIME systemTime;
     FILETIME fileTime;
 
-    Win32Call(GetSystemTime, &systemTime);
-    Win32Call(SystemTimeToFileTime, &systemTime, &fileTime);
+    //Win32Call(GetSystemTime, &systemTime);
+    //Win32Call(SystemTimeToFileTime, &systemTime, &fileTime);
+    GetSystemTime(&systemTime);	
+	
+    if (SystemTimeToFileTime(&systemTime, &fileTime))
+    {
+     //   std::cout << "File time: "<< fileTime.dwLowDateTime << ", "<< fileTime.dwHighDateTime<< std::endl;
+    }
+    else
+    {
+     //   std::cerr << "Error: Failed to convert system time to file time."<< std::endl;
+    }
+    
     uint64_t time =
         static_cast<uint64_t>(fileTime.dwLowDateTime) + (static_cast<uint64_t>(fileTime.dwHighDateTime) << 32);
 
